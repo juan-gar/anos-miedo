@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Los años del miedo · Capítulo 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ── DARK THEME (default) ── */
+  :root {
+    --red:  #c0392b;
+    --gold: #b8962e;
+
+    --bg:             #0d0d0d;
+    --bg-nav:         #111111;
+    --bg-nav-hover:   #1a1a1a;
+    --bg-nav-active:  #141414;
+    --bg-card:        #111111;
+    --bg-thesis:      #0a0a0a;
+    --bg-grid-gap:    #222222;
+
+    --border-strong:  #333333;
+    --border-main:    #222222;
+    --border-soft:    #1e1e1e;
+    --border-divider: #2a2a2a;
+
+    --text-primary:   #f5f0e8;
+    --text-body:      #ccc5b6;
+    --text-thesis:    #c0b8ac;
+    --text-muted:     #888888;
+    --text-dim:       #777777;
+    --text-dimmer:    #666666;
+    --text-dimmest:   #555555;
+    --text-nav:       #666666;
+    --text-footer:    #333333;
+    --text-indicator: #444444;
+    --text-author:    #c8bfa8;
+    --text-subtitle:  #7a7265;
+
+    --ghost-title:    #2e2b26;
+    --ghost-numeral:  #1e1e1e;
+    --grid-line:      #1a1a1a;
+  }
+
+  /* ── LIGHT THEME ── */
+  [data-theme="light"] {
+    --bg:             #f5f0e8;
+    --bg-nav:         #e8e2d8;
+    --bg-nav-hover:   #dfd9cf;
+    --bg-nav-active:  #d8d2c8;
+    --bg-card:        #ede8dc;
+    --bg-thesis:      #e5dfd5;
+    --bg-grid-gap:    #c8bfa8;
+
+    --border-strong:  #b8b0a0;
+    --border-main:    #c8bfa8;
+    --border-soft:    #d5cfc3;
+    --border-divider: #c8bfa8;
+
+    --text-primary:   #1a1710;
+    --text-body:      #3a3530;
+    --text-thesis:    #2a2520;
+    --text-muted:     #6a6058;
+    --text-dim:       #5a5248;
+    --text-dimmer:    #6a6258;
+    --text-dimmest:   #7a7268;
+    --text-nav:       #5a5248;
+    --text-footer:    #9a9288;
+    --text-indicator: #8a8278;
+    --text-author:    #4a4540;
+    --text-subtitle:  #7a7265;
+
+    --ghost-title:    #d8d2c6;
+    --ghost-numeral:  #e0dbd2;
+    --grid-line:      #d0cab8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Libre Baskerville', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    position: relative;
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-strong);
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, var(--grid-line) 39px, var(--grid-line) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, var(--grid-line) 39px, var(--grid-line) 40px);
+    opacity: 0.4;
+  }
+  .masthead-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+
+  .series-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: inline-block;
+    border: 1px solid var(--gold);
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 8vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--ghost-title);   /* intentionally near-invisible */
+    margin-bottom: 0.5rem;
+  }
+  h1 em { font-style: italic; color: var(--red); }  /* vivid subtitle word */
+
+  .subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-subtitle);
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+  }
+  .author {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--text-author);
+  }
+  .tagline {
+    margin-top: 2rem;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    z-index: 10;
+    background: none;
+    border: 1px solid var(--border-main);
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .theme-toggle:hover { color: var(--text-primary); border-color: var(--text-muted); }
+  .theme-toggle .icon { font-size: 0.8rem; }
+
+  /* ── NAV STRIP ── */
+  .nav-strip {
+    display: flex;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border-main);
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-nav);
+    transition: background 0.3s;
+  }
+  .nav-strip::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    flex: none;
+    background: none;
+    border: none;
+    border-right: 1px solid var(--border-main);
+    color: var(--text-nav);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.9rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { color: var(--text-primary); background: var(--bg-nav-hover); }
+  .nav-btn.active {
+    color: var(--gold);
+    border-bottom: 2px solid var(--gold);
+    background: var(--bg-nav-active);
+  }
+
+  /* ── MAIN ── */
+  .main { max-width: 900px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+  /* ── CHAPTER PANEL ── */
+  .chapter-panel { display: none; animation: fadeSlide 0.4s ease; }
+  .chapter-panel.active { display: block; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .chapter-header {
+    padding: 3.5rem 0 2.5rem;
+    border-bottom: 1px solid var(--border-main);
+    position: relative;
+  }
+  .chapter-number {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(5rem, 15vw, 9rem);
+    font-weight: 900;
+    font-style: italic;
+    color: var(--ghost-numeral);
+    line-height: 1;
+    position: absolute;
+    right: 0; top: 2rem;
+    pointer-events: none;
+    user-select: none;
+  }
+  .chapter-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+  .chapter-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--ghost-title);   /* ghost effect, same as h1 */
+    max-width: 600px;
+    position: relative; z-index: 1;
+  }
+  .chapter-epigraph {
+    margin-top: 1.5rem;
+    padding-left: 1.5rem;
+    border-left: 2px solid var(--border-strong);
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.65;
+    max-width: 480px;
+    position: relative; z-index: 1;
+  }
+  .chapter-epigraph cite {
+    display: block;
+    font-style: normal;
+    margin-top: 0.4rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dimmest);
+    text-transform: uppercase;
+  }
+
+  /* ── CONTENT BLOCKS ── */
+  .chapter-body { padding: 2.5rem 0; display: grid; gap: 2rem; }
+
+  .block-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .block-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-divider);
+  }
+
+  /* Central Argument */
+  .thesis-box {
+    background: var(--bg-thesis);
+    border: 1px solid var(--red);
+    padding: 1.5rem 2rem;
+    position: relative;
+  }
+  .thesis-box::before {
+    content: '▲';
+    position: absolute;
+    top: 1.2rem; right: 1.5rem;
+    color: var(--red); font-size: 0.6rem;
+  }
+  .thesis-box p {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--text-thesis);
+  }
+  .thesis-box strong { color: var(--text-primary); }
+
+  /* Summary */
+  .summary-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border-main);
+    padding: 2rem;
+  }
+  .summary-text { font-size: 0.95rem; line-height: 1.85; color: var(--text-body); }
+  .summary-text p + p { margin-top: 1rem; }
+  .summary-text strong { color: var(--text-primary); font-weight: 700; }
+
+  /* Key Concepts */
+  .concepts-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+  .concept-item {
+    display: grid;
+    grid-template-columns: 1px 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+  .concept-line { width: 1px; height: 100%; background: var(--gold); margin-top: 0.25rem; }
+  .concept-term {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.2rem;
+  }
+  .concept-def { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* Key Figures */
+  .figures-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--bg-grid-gap);
+    border: 1px solid var(--bg-grid-gap);
+  }
+  .figure-card { background: var(--bg-card); padding: 1.2rem; }
+  .figure-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+  }
+  .figure-role {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.5rem;
+  }
+  .figure-desc { font-size: 0.78rem; line-height: 1.6; color: var(--text-dim); }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border-soft);
+    margin-top: 1rem;
+  }
+  .page-btn {
+    background: none;
+    border: 1px solid var(--border-strong);
+    color: var(--text-dimmer);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .page-btn:hover:not(:disabled) { color: var(--text-primary); border-color: var(--text-muted); }
+  .page-btn:disabled { opacity: 0.2; cursor: default; }
+  .page-indicator {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--text-indicator);
+    text-transform: uppercase;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--grid-line);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--text-footer);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 600px) {
+    .figures-grid { grid-template-columns: 1fr 1fr; }
+    .summary-block { padding: 1.2rem; }
+    .chapter-header { padding: 2.5rem 0 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+    <span class="icon" id="themeIcon">☀</span>
+    <span id="themeLabel">Claro</span>
+  </button>
+  <div class="masthead-inner">
+    <span class="series-tag">Capítulo 1 · Planeta · 2008</span>
+    <!-- Split title so first word(s) can be ghost, one em word is red -->
+    <h1>Los años<br><em>del miedo</em></h1>
+    <p class="subtitle">La nueva España (1939-1952)</p>
+    <p class="author">Juan Eslava Galán</p>
+    <p class="tagline">«En España empieza a amanecer»: un amanecer en Jaén, mayo de 1939, para contar cómo se vivió la primera mañana de la posguerra.</p>
+  </div>
+</header>
+
+<nav class="nav-strip" id="navStrip"></nav>
+
+<main class="main">
+  <div id="chapters"></div>
+</main>
+
+<footer>Juan Eslava Galán · Los años del miedo · Planeta 2008 · Guía de resumen</footer>
+
+<script>
+// ── DATA ──
+// Each object = one chapter/intro/conclusion
+const chapters = [
+  {
+    id: 0,
+    label: "Panorama",
+    title: "En España empieza a amanecer",
+    number: "·",
+    epigraph: {
+      text: "Con la Victoria ha llegado la hora de la revancha, del ajuste de cuentas.",
+      author: "Juan Eslava Galán, cap. 1"
+    },
+    thesis: "La primera mañana de la posguerra revela la <strong>Nueva España</strong> tal como es: un país partido en <strong>vencedores y vencidos</strong>, donde la represión, el ritual obligatorio, el reparto desigual de la miseria y el luto cotidiano dan la medida exacta de lo que la propaganda llama «amanecer».",
+    summary: [
+      "El capítulo abre el libro con un recurso que lo recorrerá entero: seguir a un personaje corriente —<strong>Teófilo González</strong>, diecisiete años, hijo de un ferroviario republicano encarcelado— a lo largo de un amanecer en <strong>Jaén, el 22 de mayo de 1939</strong>. Desde su buhardilla frente a la catedral, el lector escucha, mira y huele la posguerra recién estrenada.",
+      "La escena se amplía de lo íntimo a lo nacional. Las descargas del pelotón en las tapias del cementerio, el miedo a la denuncia anónima, la consigna de Radio Nacional y el <strong>Cara al Sol</strong> obligatorio muestran un régimen que no ha firmado la paz, sino que prolonga la guerra contra «todo enemigo del interior».",
+      "Eslava Galán contrapone la retórica de Honor, Patria y Justicia con las cifras: el coste de la vida sube un 247 % y los salarios sólo un 150 %, mientras la banca y las empresas engordan y los <strong>militares</strong> reciben cargos, economatos, viviendas y soldados que les sirven gratis como fontaneros, chóferes o niñeras.",
+      "El capítulo se cierra en la calle: mujeres que rebuscan entre los desperdicios del mercado, ropa remendada y vuelta del revés, lutos por todas partes y la tríada <strong>Ejército, Iglesia y Falange</strong> charlando en la escalinata de Correos bajo un escudo republicano olvidado. La amarga ironía final de Ambrosio —«no se ha pasado mal»— resume el tono de todo el libro: humor negro para contar el hambre y el miedo."
+    ],
+    concepts: [
+      { term: "Vencedores / vencidos", def: "La división que estructura la posguerra: la mitad de España que apoyó a la República vive bajo sospecha, sin derechos ni privilegios." },
+      { term: "Nueva España", def: "Nombre que se da el régimen nacido de la Victoria, sostenido por tres columnas: Ejército, Iglesia y Falange." },
+      { term: "Microhistoria", def: "Método narrativo del autor: contar la gran historia a través de personas anónimas, anuncios, fotos y anécdotas cotidianas." }
+    ],
+    figures: [
+      { name: "Teófilo González", role: "Hilo conductor · Jaén", desc: "Joven de diecisiete años, hijo de un preso republicano, cuya mirada desde la buhardilla guía el capítulo." },
+      { name: "Francisco Franco", role: "Jefe del Estado", desc: "Omnipresente en vítores y consignas; compensa a sus compañeros de armas con cargos y privilegios materiales." },
+      { name: "Ambrosio Doblado Anguita", role: "Hortelano · Jaén", desc: "Su repaso de las desgracias familiares, rematado con un «no se ha pasado mal», cierra el capítulo con humor negro." }
+    ]
+  },
+  {
+    id: 1,
+    label: "I · El alba de los fusilamientos",
+    title: "Descargas al amanecer",
+    number: "I",
+    epigraph: {
+      text: "Bastaba con acusar a cualquiera de “masón” o de “rojo” para verle expulsado del trabajo o marginado en las relaciones sociales.",
+      author: "Alberto Reig Tapia, Franco: el césar superlativo"
+    },
+    thesis: "La paz de 1939 empieza con el sonido del <strong>pelotón de fusilamiento</strong>: la represión es rutina urbana y el <strong>miedo a la denuncia</strong> se convierte en la atmósfera en la que respira media España.",
+    summary: [
+      "Los retortijones del hambre despiertan a Teófilo en su buhardilla de la calle Hurtado. A las seis da la campana de San Ildefonso, y muchos oídos de la ciudad esperan la primera descarga del pelotón que cumple sentencias en las tapias del cementerio; quienes viven cerca oyen también los tiros de gracia.",
+      "Es un sonido familiar en todas las capitales de provincia. Una nota a pie, citando a Sánchez Tostado, recuerda que entre 1939 y 1942 las auditorías de guerra no dieron abasto y que en Jaén, a principios de 1941, hubo sacas de hasta cincuenta ejecutados por día.",
+      "El detalle simbólico del capítulo está en la cama del protagonista: la sábana que lo cubre fue pancarta en un acto patriótico y aún se lee «SALUDO A FRANCO, ARRIBA ESPAÑA», pese a que su madre la ha lavado dos veces. La pintura del régimen no se va.",
+      "Los vencidos viven en zozobra: el frenazo de un coche, pasos en la escalera, nudillos en la puerta. El padre de Teófilo, ferroviario de Izquierda Republicana, cumple veinte años y un día por dirigir el tráfico de trenes en la estación de Espeluy. Teófilo se libró de la guerra por los pelos, pero «no se va a librar de la posguerra»."
+    ],
+    concepts: [
+      { term: "Sacas", def: "Extracciones de presos de la cárcel para ser fusilados; en Jaén llegaron a cincuenta ejecutados en un día." },
+      { term: "Juicio sumarísimo", def: "Procedimiento militar exprés, sin garantías, con el que las auditorías de guerra despachaban a miles de acusados." },
+      { term: "Denuncia anónima", def: "Arma social de la posguerra: no requería pruebas y bastaba para hundir a un vecino tachándolo de «rojo» o «masón»." }
+    ],
+    figures: [
+      { name: "Teófilo González", role: "Protagonista", desc: "Joven hambriento y sin futuro claro, marcado por la condición de hijo de preso político." },
+      { name: "Padre de Teófilo", role: "Ferroviario · Izquierda Republicana", desc: "Condenado a veinte años y un día por cumplir con su trabajo en la estación de Espeluy." },
+      { name: "Luis Miguel Sánchez Tostado", role: "Historiador citado", desc: "Su estudio sobre la guerra civil en Jaén aporta las cifras de la represión local." }
+    ]
+  },
+  {
+    id: 2,
+    label: "II · ¡Españoles, alerta!",
+    title: "El ritual de la Victoria",
+    number: "II",
+    epigraph: {
+      text: "¡La paz no es un reposo cómodo y cobarde frente a la Historia! ¡España sigue en pie de guerra contra todo enemigo del interior o del exterior!",
+      author: "Consigna de Radio Nacional, voz de Fernando Fernández de Córdoba"
+    },
+    thesis: "El régimen impone una <strong>liturgia patriótica obligatoria</strong> —consignas, himno, saludo y gritos de rigor— y convierte la adhesión a <strong>Falange</strong> en el pasaporte hacia los privilegios de los vencedores.",
+    summary: [
+      "A través del tabique de cañizo, Teófilo oye la radio del vecino. Radio Nacional repite varias veces al día la consigna oficial que ya sabe de memoria: la paz no es reposo, la sangre de los caídos no consiente el olvido y España sigue en pie de guerra.",
+      "Tras la proclama suena el <strong>Cara al Sol</strong>, obligatorio desde 1937 antes de cualquier acto público: discursos, cine, circo, toros o fútbol. Se canta firmes, brazo en alto y mano extendida. Una nota cuenta cómo la Asociación de Sordomudos de Madrid tuvo que avisar a sus afiliados de que el puño en alto había sido sustituido por el saludo fascista.",
+      "Después vienen los <strong>gritos de rigor</strong> —«¡España! ¡Una! ¡Grande! ¡Libre! ¡Arriba España! ¡Viva Franco!»—, oficializados a sugerencia del jefe de Prensa de Madrid, Manuel Aznar, abuelo de un futuro presidente del Gobierno.",
+      "La camisa azul se vuelve disfraz: unos la visten para hacerse perdonar tibiezas pasadas, otros para cobrar su contribución a la Victoria. El abuso es tal que la propia Falange prohíbe la venta del tejido. Casi un millón de personas solicitan el carnet del partido, y se crean comisiones para cribar la avalancha de arribistas."
+    ],
+    concepts: [
+      { term: "Cara al Sol", def: "Himno de Falange, de canto obligatorio para toda la población, incluida la media España derrotada." },
+      { term: "Gritos de rigor", def: "Fórmula ritual de vítores que el asistente de más rango vocea y el público corea «con viril entusiasmo»." },
+      { term: "Camisa azul / carnet", def: "Símbolos de adhesión a Falange que funcionan como salvoconducto social y vía de ascenso para oportunistas." }
+    ],
+    figures: [
+      { name: "Fernando Fernández de Córdoba", role: "Speaker de Radio Nacional", desc: "La voz vibrante que difunde la consigna «¡Españoles, alerta!»." },
+      { name: "Manuel Aznar", role: "Jefe de Prensa de Madrid", desc: "Periodista que sugirió oficializar los gritos de rigor; abuelo de José María Aznar." },
+      { name: "José Antonio Primo de Rivera", role: "Fundador de Falange", desc: "El partido «de José Antonio» recibe casi un millón de solicitudes de ingreso tras la guerra." }
+    ]
+  },
+  {
+    id: 3,
+    label: "III · Vencedores y vencidos",
+    title: "Vacas gordas sobre ruinas",
+    number: "III",
+    epigraph: {
+      text: "Entre 1940 y 1952 nacieron las grandes entidades bancarias del franquismo… para vivir una década de vacas gordas sobre ruinas.",
+      author: "Mariano Sánchez Soler, Los Franco, S.A."
+    },
+    thesis: "La posguerra empobrece a la mayoría mientras <strong>banca, empresas y militares</strong> se enriquecen: el reparto de la miseria es tan político como la represión, y la retórica del Honor encubre el abuso cotidiano.",
+    summary: [
+      "A Teófilo la posguerra le parece tan mala como la guerra, y las cifras le dan la razón: el coste de la vida ha subido un <strong>247 %</strong> frente a antes de 1936, y los salarios apenas un <strong>150 %</strong>. En la década 1936-1946 los salarios reales caen un 25 %.",
+      "En el otro platillo de la balanza, la rentabilidad de las empresas crece un 13,79 % y los beneficios de la banca un 29,9 %. Nacen los grandes bancos del franquismo —Banesto, Central, Bilbao, Vizcaya— absorbiendo a los cuarenta y siete existentes.",
+      "Franco mantiene moderados los sueldos militares, pero compensa a sus conmilitones con el 40 % de los altos cargos del Estado, colonias de viviendas y economatos. El codiciado puesto de <strong>oficial de cocinas</strong>, que rota cada mes, permite cobrar comisiones a proveedores y llevarse a casa garbanzos, tocino, bacalao y aceite de la despensa castrense.",
+      "Además, durante decenios los mandos usan a los soldados como mano de obra gratuita: fontaneros, electricistas, peluqueros, chóferes, niñeras o profesores particulares. Durante dos años de mili —aunque ya se hubiera servido con la República— el soldado es «rehén de sus superiores». El autor subraya la paradoja de que lo hagan quienes hablan sin cesar de Honor, Patria y Justicia."
+    ],
+    concepts: [
+      { term: "Salario real", def: "Poder adquisitivo efectivo del sueldo: cae un 25 % entre 1936 y 1946 porque los precios suben mucho más que los jornales." },
+      { term: "Economato", def: "Tienda reservada (en este caso a militares) con productos más baratos que en el comercio ordinario." },
+      { term: "Oficial de cocinas", def: "Cargo rotatorio que gestiona el avituallamiento de la tropa y se presta a comisiones y desvío de víveres." }
+    ],
+    figures: [
+      { name: "Francisco Franco", role: "Jefe del Estado", desc: "Asegura la lealtad del Ejército repartiendo cargos públicos, viviendas y ventajas materiales." },
+      { name: "El soldado de reemplazo", role: "Figura colectiva", desc: "Trabaja gratis para sus superiores durante dos años a cambio, con suerte, de una propina o un permiso." },
+      { name: "Mariano Sánchez Soler", role: "Periodista citado", desc: "Autor de Los Franco, S.A., fuente sobre el auge de la banca franquista." }
+    ]
+  },
+  {
+    id: 4,
+    label: "IV · La calle",
+    title: "Remiendos, lutos y tres columnas",
+    number: "IV",
+    epigraph: {
+      text: "¡Pues no se ha pasado mal! … pero, aparte de eso, no se ha pasado mal.",
+      author: "Ambrosio Doblado Anguita"
+    },
+    thesis: "La calle de Jaén es un retrato en miniatura de la Nueva España: <strong>hambre visible</strong>, ropa remendada, <strong>lutos</strong> por doquier y el poder de <strong>Ejército, Iglesia y Falange</strong> instalado sobre los restos de la República.",
+    summary: [
+      "Fumando un cigarrillo liado con colillas del café Lion d'Or, Teófilo observa la plaza de San Francisco: el burro del lechero con sus cuatro cántaras, los taxistas charlando frente al Gobierno Civil y viejas con tocas negras que madrugan para rebuscar fruta agusanada y tronchos de lechuga entre los desperdicios del mercado.",
+      "En la escalinata de Correos, adornada con un escudo republicano que pasará inadvertido todo el franquismo, conversan un militar, un cura gordo con teja y manteo y un falangista con camisa azul y boina roja: <strong>Ejército, Iglesia y Falange</strong>, las tres columnas del régimen.",
+      "Dos novedades llaman la atención: la población ha adelgazado y viste con torpe aliño —pantalones con parches de otro color, trajes dados la vuelta que se delatan por el ojal y el bolsillo en el lado equivocado—. Los obreros pasan a llamarse «productores», y anuncios de reconstituyentes y tintorerías («LUTOS en 24 horas») salpican el texto.",
+      "Los lutos lo invaden todo, con su gradación de negro, gris y blanco con lunares. El capítulo termina con el hortelano Ambrosio: un hijo muerto en Aragón, otro sin pierna, una hija preñada y abandonada con mellizos, uno ciego, y él viudo; «pero, aparte de eso, no se ha pasado mal». El humor negro como forma de supervivencia."
+    ],
+    concepts: [
+      { term: "Las tres columnas", def: "Ejército, Iglesia y Falange: los pilares sobre los que se sostiene la Nueva España." },
+      { term: "Traje dado la vuelta", def: "Prenda descosida y vuelta del revés para aprovecharla; se delata porque ojales y bolsillo quedan en el lado contrario." },
+      { term: "Productores", def: "Eufemismo oficial que sustituye a «obreros» para borrar sus connotaciones izquierdistas." }
+    ],
+    figures: [
+      { name: "Ambrosio Doblado Anguita", role: "Hortelano · Jaén", desc: "Encarna la resignación irónica del pueblo ante una tragedia familiar convertida en rutina." },
+      { name: "Las viejas de tocas negras", role: "Figura colectiva", desc: "Rebuscan comida entre los desperdicios del mercado: el hambre antes incluso del racionamiento." },
+      { name: "Militar, cura y falangista", role: "Las tres columnas", desc: "Su charla en la escalinata de Correos escenifica el reparto del poder en la Nueva España." }
+    ]
+  }
+];
+
+// ── BUILD DOM ──
+const navEl = document.getElementById('navStrip');
+const chaptersEl = document.getElementById('chapters');
+let current = 0;
+
+chapters.forEach((ch, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'nav-btn' + (i === 0 ? ' active' : '');
+  btn.textContent = ch.label;
+  btn.onclick = () => goTo(i);
+  navEl.appendChild(btn);
+
+  const panel = document.createElement('div');
+  panel.className = 'chapter-panel' + (i === 0 ? ' active' : '');
+  panel.innerHTML = `
+    <div class="chapter-header">
+      <span class="chapter-label">${ch.label}</span>
+      <h2 class="chapter-title">${ch.title}</h2>
+      <div class="chapter-epigraph">
+        <p>«${ch.epigraph.text}»</p>
+        <cite>— ${ch.epigraph.author}</cite>
+      </div>
+      <div class="chapter-number">${ch.number}</div>
+    </div>
+    <div class="chapter-body">
+      <div class="thesis-box">
+        <div class="block-label">Argumento central</div>
+        <p>${ch.thesis}</p>
+      </div>
+      <div class="summary-block">
+        <div class="block-label">Resumen</div>
+        <div class="summary-text">
+          ${ch.summary.map(p => `<p>${p}</p>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="block-label" style="margin-bottom:1rem">Conceptos clave</div>
+        <ul class="concepts-list">
+          ${ch.concepts.map(c => `
+            <li class="concept-item">
+              <div class="concept-line"></div>
+              <div>
+                <div class="concept-term">${c.term}</div>
+                <div class="concept-def">${c.def}</div>
+              </div>
+            </li>`).join('')}
+        </ul>
+      </div>
+      <div>
+        <div class="block-label" style="margin-bottom:1rem">Personajes clave</div>
+        <div class="figures-grid">
+          ${ch.figures.map(f => `
+            <div class="figure-card">
+              <div class="figure-name">${f.name}</div>
+              <div class="figure-role">${f.role}</div>
+              <div class="figure-desc">${f.desc}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="pagination">
+        <button class="page-btn" onclick="goTo(${i-1})" ${i===0?'disabled':''}>
+          ← ${i>0 ? chapters[i-1].label : ''}
+        </button>
+        <span class="page-indicator">${i+1} / ${chapters.length}</span>
+        <button class="page-btn" onclick="goTo(${i+1})" ${i===chapters.length-1?'disabled':''}>
+          ${i<chapters.length-1 ? chapters[i+1].label : ''} →
+        </button>
+      </div>
+    </div>`;
+  chaptersEl.appendChild(panel);
+});
+
+// ── NAVIGATION ──
+function goTo(idx) {
+  if (idx < 0 || idx >= chapters.length) return;
+  document.querySelectorAll('.chapter-panel').forEach((p, i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.nav-btn').forEach((b, i) => b.classList.toggle('active', i===idx));
+  navEl.querySelectorAll('.nav-btn')[idx].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  window.scrollTo({top:0, behavior:'smooth'});
+  current = idx;
+}
+
+// ── THEME ──
+let isDark = true;
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeIcon').textContent = isDark ? '☀' : '☾';
+  document.getElementById('themeLabel').textContent = isDark ? 'Claro' : 'Oscuro';
+}
+document.documentElement.setAttribute('data-theme', 'dark');
+</script>
+</body>
+</html>
