@@ -390,12 +390,59 @@ function readHash() {
   try {
     const [b, a] = window.location.hash.slice(1).split("/");
     const bookIdx = BOOKS.findIndex(x => x.id === b);
-    if (bookIdx < 0) return { bookIdx: 0, idx: 0 };
+    if (bookIdx < 0) return null;
     const idx = Math.min(Math.max(parseInt(a, 10) || 0, 0), BOOKS[bookIdx].all.length - 1);
     return { bookIdx, idx };
   } catch (e) {
-    return { bookIdx: 0, idx: 0 };
+    return null;
   }
+}
+
+// Punto de lectura guardado en este navegador: último libro abierto y, por libro, el
+// artículo y el párrafo visible. Si el almacenamiento no está disponible, el lector
+// funciona igual pero sin recordar nada.
+const STORE_KEY = "eslava-lector:posicion";
+
+function loadStore() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (data && typeof data === "object" && data.books) return data;
+  } catch (e) { /* almacenamiento no disponible */ }
+  return { last: null, books: {} };
+}
+
+function saveStore(data) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) { /* sin almacenamiento */ }
+}
+
+function savedSpot(store, bookIdx) {
+  const spot = store.books[BOOKS[bookIdx].id];
+  if (!spot) return null;
+  const idx = Math.min(Math.max(spot.idx | 0, 0), BOOKS[bookIdx].all.length - 1);
+  return { idx, para: Math.max(spot.para | 0, 0) };
+}
+
+// Posición inicial: la del enlace si lo hay; si no, donde se dejó la lectura.
+function initialPos(store) {
+  const fromHash = readHash();
+  if (fromHash) return fromHash;
+  const bookIdx = Math.max(BOOKS.findIndex(b => b.id === store.last), 0);
+  return { bookIdx, idx: savedSpot(store, bookIdx)?.idx ?? 0 };
+}
+
+// Primer párrafo visible bajo la barra superior del lector.
+function firstVisiblePara(pane) {
+  const top = pane.getBoundingClientRect().top + 60;
+  for (const el of pane.querySelectorAll("[data-p]")) {
+    if (el.getBoundingClientRect().bottom > top) return Number(el.dataset.p);
+  }
+  return 0;
+}
+
+function scrollToPara(pane, para) {
+  const el = pane.querySelector(`[data-p="${para}"]`);
+  if (!el || para === 0) { pane.scrollTop = 0; return; }
+  pane.scrollTop += el.getBoundingClientRect().top - pane.getBoundingClientRect().top - 70;
 }
 
 const SHEET_CSS = `
@@ -550,7 +597,14 @@ function Paragraph({ para, dropCap, isNotes, color, t, onNote }) {
 }
 
 function BookReader() {
-  const [pos, setPos] = useState(readHash);
+  const [store] = useState(loadStore);
+  const [pos, setPos] = useState(() => initialPos(store));
+  // Se avisa al abrir si se retoma una lectura empezada (y no se ha llegado por un enlace).
+  const [resumed, setResumed] = useState(() => {
+    if (readHash()) return false;
+    const spot = savedSpot(store, pos.bookIdx);
+    return !!spot && (spot.idx > 0 || spot.para > 0);
+  });
   const [dark, setDark] = useState(() =>
     typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
   const [isMobile, setIsMobile] = useState(false);
@@ -575,15 +629,53 @@ function BookReader() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  // Al cambiar de artículo: si es el que se dejó a medias, vuelve al párrafo guardado.
   useEffect(() => {
     const pane = document.getElementById("reading-pane");
-    if (pane) pane.scrollTop = 0;
+    const spot = savedSpot(store, pos.bookIdx);
+    const para = spot && spot.idx === idx ? spot.para : 0;
+    if (pane) scrollToPara(pane, para);
+    store.last = book.id;
+    store.books[book.id] = { idx, para };
+    saveStore(store);
     setOpenNote(null);
     try { history.replaceState(null, "", `#${book.id}/${idx}`); } catch (e) { /* sin historial */ }
   }, [pos]);
 
   useEffect(() => {
-    const onHash = () => setPos(readHash());
+    if (!resumed) return;
+    const timer = setTimeout(() => setResumed(false), 6000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Guarda el párrafo visible mientras se lee (con un pequeño retraso) y al salir.
+  useEffect(() => {
+    const pane = document.getElementById("reading-pane");
+    if (!pane) return;
+    let timer = null;
+    const save = () => {
+      timer = null;
+      const spot = store.books[book.id];
+      if (!spot || spot.idx !== idx) return;
+      spot.para = firstVisiblePara(pane);
+      saveStore(store);
+    };
+    const onScroll = () => { if (!timer) timer = setTimeout(save, 300); };
+    const onLeave = () => { if (timer) { clearTimeout(timer); save(); } };
+    pane.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pagehide", onLeave);
+    document.addEventListener("visibilitychange", onLeave);
+    return () => {
+      // Aquí el DOM ya muestra el artículo nuevo: no se guarda, solo se cancela.
+      if (timer) clearTimeout(timer);
+      pane.removeEventListener("scroll", onScroll);
+      window.removeEventListener("pagehide", onLeave);
+      document.removeEventListener("visibilitychange", onLeave);
+    };
+  }, [pos]);
+
+  useEffect(() => {
+    const onHash = () => { const h = readHash(); if (h) setPos(h); };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
@@ -596,7 +688,17 @@ function BookReader() {
   }, [openNote]);
 
   const select = (i) => { setPos({ bookIdx: pos.bookIdx, idx: i }); if (isMobile) setSidebarOpen(false); };
-  const selectBook = (b) => { if (b !== pos.bookIdx) setPos({ bookIdx: b, idx: 0 }); };
+  // Cada libro se abre por donde se dejó.
+  const selectBook = (b) => {
+    if (b !== pos.bookIdx) setPos({ bookIdx: b, idx: savedSpot(store, b)?.idx ?? 0 });
+  };
+  const restartBook = () => {
+    store.books[book.id] = { idx: 0, para: 0 };
+    setResumed(false);
+    setPos({ bookIdx: pos.bookIdx, idx: 0 });
+    const pane = document.getElementById("reading-pane");
+    if (pane) pane.scrollTop = 0;
+  };
 
   // Abre la nota y, si la llamada quedaría tapada por la hoja, desplaza el texto
   // para dejarla en la mitad superior del lector.
@@ -650,6 +752,11 @@ function BookReader() {
                   <div style={{ fontFamily: "system-ui, sans-serif", fontSize: "0.65rem", letterSpacing: "0.1em",
                                 textTransform: "uppercase", color: t.muted, marginBottom: 3 }}>{b.part}</div>
                   <div style={{ fontWeight: active ? 700 : 400, fontSize: "0.95rem", lineHeight: 1.25 }}>{b.title}</div>
+                  {!active && store.books[b.id] && (
+                    <div style={{ fontFamily: "system-ui, sans-serif", fontSize: "0.72rem", color: t.muted, marginTop: 4 }}>
+                      Seguir en: {b.all[savedSpot(store, i).idx].article.title}
+                    </div>
+                  )}
                 </button>
               );
             })}
@@ -720,8 +827,10 @@ function BookReader() {
           <div style={{ borderTop: `3px solid ${section.color}`, marginBottom: 32 }} />
 
           {paras.map((p, i) => (
-            <Paragraph key={`${book.id}-${idx}-${i}`} para={p} dropCap={i === firstPlain} isNotes={isNotes}
-                       color={section.color} t={t} onNote={goToNote} />
+            <div key={`${book.id}-${idx}-${i}`} data-p={i}>
+              <Paragraph para={p} dropCap={i === firstPlain} isNotes={isNotes}
+                         color={section.color} t={t} onNote={goToNote} />
+            </div>
           ))}
 
           <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginTop: 48,
@@ -737,6 +846,22 @@ function BookReader() {
           </div>
         </article>
       </main>
+      {resumed && !openNote && (
+        <div role="status" style={{ position: "absolute", left: "50%", bottom: 20, transform: "translateX(-50%)",
+                                    zIndex: 25, display: "flex", alignItems: "center", gap: 12, maxWidth: "calc(100% - 32px)",
+                                    background: t.text, color: t.bg, borderRadius: 8, padding: "10px 12px 10px 16px",
+                                    boxShadow: "0 6px 20px rgba(0,0,0,0.25)", fontFamily: "system-ui, sans-serif",
+                                    fontSize: "0.85rem" }}>
+          <span>Continúas donde lo dejaste</span>
+          <button onClick={restartBook}
+                  style={{ background: "none", border: `1px solid ${t.bg}`, color: t.bg, borderRadius: 4,
+                           padding: "4px 8px", cursor: "pointer", fontSize: "0.8rem", whiteSpace: "nowrap" }}>
+            Empezar el libro
+          </button>
+          <button onClick={() => setResumed(false)} aria-label="Cerrar aviso"
+                  style={{ background: "none", border: "none", color: t.bg, cursor: "pointer", fontSize: "0.95rem" }}>✕</button>
+        </div>
+      )}
       {openNote && book.notesSection && (
         <NoteSheet n={openNote} text={book.notes[openNote]} color={book.notesSection.color}
                    t={t} onClose={() => setOpenNote(null)} />
